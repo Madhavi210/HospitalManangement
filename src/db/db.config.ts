@@ -1,10 +1,12 @@
 import mongoose from 'mongoose'
-import 'dotenv/config'
+import 'dotenv/config';
+import { apiError } from '../helper/apiError';
+
 
 let url:string | undefined = process.env.MONGO_URI;
 
 if(!url){
-    throw new Error("Connection String Error")
+    throw new apiError(500, "Please provide mongo url in .env file")
 }
 
 export const connectDb = async () =>{
@@ -16,3 +18,4 @@ export const connectDb = async () =>{
         
     })
 }
+

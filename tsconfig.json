@@ -105,5 +105,9 @@
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  }
+  },
+  "include": [
+    "src/**/*.ts", // Example path, adjust as needed
+    "custom.d.ts" // Add the path to custom.d.ts here
+  ]
 }

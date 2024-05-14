@@ -42,7 +42,7 @@ const patientSchema:Schema =  new Schema<ipatient>({
         type: String,
         enum : ["M","F","O"],
         required: true,
-        lowercase: true,
+        // lowercase: true,
     },
     token: {
         type: String,

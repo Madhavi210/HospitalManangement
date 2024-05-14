@@ -1,6 +1,6 @@
 
 
-export class errorHandler extends Error{
+export class apiError extends Error{
     constructor(
         public statusCode: number, 
         public message: string = "Something went wrong",

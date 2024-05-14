@@ -43,3 +43,5 @@ const doctorSchema:Schema = new Schema<idoctor>({
 }, {timestamps: true})
 
 export const Doctors = mongoose.model<idoctor>("Doctors", doctorSchema)
+
+

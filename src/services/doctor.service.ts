@@ -1,32 +1,67 @@
 import express from 'express'
-import { Doctors } from '../models/doctor.model'
+import { Doctors , Patients, medicalRecords} from '../models/index.model'
 import { Request, Response } from 'express';
-
+import bcrypt from 'bcrypt'
 export class doctorService { 
     getAllDoctor = async (req:Request, res:Response) =>{
-        const data = await Doctors.find();
+        try {
+            const data = await Doctors.find();
+            return data;
+        } catch (error:any) {
+            throw new Error(error.message); 
+        }
     }
 
     getDoctorById = async(req:Request, res:Response) =>{
-        const {id} = req.params;
-        const data = await Doctors.findById(id)
+       try {
+            const {id} = req.params;
+            const data = await Doctors.findById(id);
+            return data;
+       } catch (error:any) {
+            throw new Error(error.message); 
+       }
     }
 
     createDoctor = async(req:Request, res:Response) =>{
-        const data = Doctors.create(req.body);
+        try {
+            const hashedPassword = await bcrypt.hash(req.body.password, 10) ;
+            const data = await Doctors.create({...req.body, password:hashedPassword});
+            return data;
+        } catch (error:any) {
+            throw new Error(error.message);
+        }
     }
 
     deleteDoctorById = async(req:Request, res:Response) =>{
-        const {id} = req.params;
-        const data = Doctors.findByIdAndDelete(id)
+        try {
+            const {doctorId} = req.params;
+            const data =  await Doctors.findByIdAndDelete(doctorId);
+            return data;
+        } catch (error:any) {
+            throw new Error(error.message);
+        }
     }
 
     updateDocrtorById = async(req:Request, res:Response) =>{
-        const {id} = req.params;
-        const {name, email, password, mobileNo, salary, qualification, experianceInYear} = req.body;
-        if (!name || !email || !password || !mobileNo || !salary ) {
-            return res.status(400).json({ error: 'All fields are required.' });
+        try {
+            const {doctorId} = req.params;
+            const {name, email, password, mobileNo, salary, qualification, experianceInYear} = req.body;
+            if (!name || !email || !password || !mobileNo || !salary || !qualification ) {
+                return res.status(400).json({ error: 'All fields are required.' });
+            }
+            const data = await Doctors.findByIdAndUpdate(doctorId,
+                {
+                    name, email, password, mobileNo, salary, qualification, experianceInYear
+                },
+                {new:true});
+            if (!data) {
+                return res.status(404).json({ error: 'doctor not found' });
+            }
+            return data;
+        } catch (error:any) {
+            throw new Error(error.message);
         }
-        const data = Doctors.findByIdAndUpdate(id)
     }
 }
+
+

@@ -18,7 +18,7 @@ export interface idoctor {
     salary: string,
     qualification: string,
     experianceInYear: number ,
-    token: string
+    token?: string
 }
 
 export interface ipatient {
@@ -30,6 +30,14 @@ export interface ipatient {
     address: string,
     age: number,
     bloodGroup: string,
-    gender: string,
-    token: string,
+    gender: string;
+    token?: string;
+}
+
+export interface User{
+    name : string,
+    email: string,
+    password: string,
+    role: string;
+    token?: string
 }
