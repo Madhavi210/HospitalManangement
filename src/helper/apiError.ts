@@ -1,5 +1,3 @@
-
-
 export class apiError extends Error{
     constructor(
         public statusCode: number, 

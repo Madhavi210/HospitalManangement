@@ -1,12 +1,13 @@
-import express, {Request, Response} from 'express';
+import express, {Request, Response } from 'express';
 import { Doctors , Patients, medicalRecords} from '../models/index.model'
+// import  {RequestQuery} from 'express-serve-static-core';
 
 export class medicalRecordsService {
     getAllRecord = async(req:Request, res:Response)=>{
         try {
             // Pagination
             const page = parseInt(req.query.page as string) || 1; // default page 1
-            const limit = parseInt(req.query.limit as string) || 3; // default limit 10
+            const limit = parseInt(req.query.limit as string) || 10; // default limit 10
             const skip = Math.max(page - 1, 0) * limit; 
 
              // Searching
@@ -29,7 +30,7 @@ export class medicalRecordsService {
             const filter = { ...searchQuery }; // Add more filters as needed
         
             // Sorting
-            const sort = req.query.sort ? JSON.parse(req.query.sort as string) : { addmittedDate: -1 }; // default sorting by createdAt descending
+            const sort = req.query.sort ? JSON.parse(req.query.sort as string) : { createdAt: -1 }; // default sorting by createdAt descending
 
             // Aggregation pipeline
             const pipeline = [
@@ -39,18 +40,21 @@ export class medicalRecordsService {
                 { $skip: skip },
                 { $limit: limit },
                 { $sort: sort },
-                { $unwind: "$patient" },
-                // Add more pipeline stages as needed
+                // { $unwind: "$patient" },
+                // { $unwind: "$doctor" }
             ];
-
+            console.log(pipeline);
+            
             const data = await medicalRecords.aggregate(pipeline).exec();
-
+            console.log(data);
+            
             // const data = await medicalRecords.find().populate({path:"patientId"})
             return data;
         } catch (error:any) {
             throw new Error(error.message);
         }
     }
+
     getRecordById = async(req:Request, res:Response) =>{
         try {
             const {id} = req.params;
