@@ -2,6 +2,8 @@ import { apiError } from "../helper/apiError";
 import { apiResponse } from "../helper/apiResponse";
 import { doctorService , patientService, medicalRecordsService} from '../services/index.service'
 import express, {Request, Response} from 'express';
+import { Doctors , Patients, medicalRecords} from '../models/index.model'
+
 
 const patientObj = new patientService();
 
@@ -9,7 +11,9 @@ export class patientController {
     getAllPatient = async(req:Request, res:Response) => {
         try {
             const data = await patientObj.getAllPatient(req,res);
-            const response = new apiResponse(200,data, 'patients retrieved successfully');
+            const totalRecord = await Patients.countDocuments();
+            const totalPages = Math.ceil(totalRecord / (parseInt(req.query.limit as string) || 10));
+            const response = new apiResponse(200,{totalRecord, totalPages, currentPage: parseInt(req.query.page as string) || 1  ,data}, 'patients retrieved successfully');
             res.status(response.statusCode).json( response);
         } catch (error:any) {            
             const errResponse = new apiError(500, 'Internal Server Error', [error.message]);

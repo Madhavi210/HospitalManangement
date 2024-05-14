@@ -2,13 +2,17 @@ import { doctorService , patientService, medicalRecordsService} from '../service
 import { apiResponse } from "../helper/apiResponse";
 import { apiError } from "../helper/apiError";
 import { Request, Response } from "express";
+import { Doctors , Patients, medicalRecords} from '../models/index.model'
+
 
 const doctorObj = new doctorService();
 export class doctorController {
     getAllDoctor = async(req:Request, res:Response) => {
         try {
             const data = await doctorObj.getAllDoctor(req,res);
-            const response = new apiResponse(200,data, 'doctors retrieved successfully');
+            const totalRecord = await Doctors.countDocuments();
+            const totalPages = Math.ceil(totalRecord / (parseInt(req.query.limit as string) || 10));
+            const response = new apiResponse(200,{totalRecord, totalPages, currentPage: parseInt(req.query.page as string) || 1  ,data}, 'doctors retrieved successfully');
             res.status(response.statusCode).json(response);
         } catch (error:any) {
             const errResponse = new apiError(500, 'Internal Server Error', [error.message]);

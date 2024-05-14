@@ -5,7 +5,38 @@ import bcrypt from 'bcrypt'
 export class doctorService { 
     getAllDoctor = async (req:Request, res:Response) =>{
         try {
-            const data = await Doctors.find();
+            // const data = await Doctors.find();
+            const page = parseInt(req.query.page as string) || 1; // default page 1
+            const limit = parseInt(req.query.limit as string) || 10; // default limit 10
+            const skip = Math.max(page - 1, 0) * limit; 
+
+            const searchQuery: any = {};
+            if (req.query.search) {
+                const searchValue = req.query.search as string;
+                searchQuery.$or = [
+                    { doctorId: searchValue },
+                    { name: {$regex:searchValue , $options: 'i'} },
+                    { email: {$regex:searchValue , $options: 'i'} },
+                    { mobileNo: {$regex:searchValue , $options: 'i'} },
+                    { qualification: {$regex:searchValue , $options: 'i'} },
+                ];
+            }
+             // Filtering
+            const filter = { ...searchQuery }; // Add more filters as needed
+        
+            // Sorting
+            const sort = req.query.sort ? JSON.parse(req.query.sort as string) : { createdAt: -1 }; // default sorting by createdAt descending
+
+            // Aggregation pipeline
+            const pipeline = [
+                { $match: filter },
+                { $skip: skip },
+                { $limit: limit },
+                { $sort: sort },
+            ];
+
+            const data = await medicalRecords.aggregate(pipeline).exec();
+
             return data;
         } catch (error:any) {
             throw new Error(error.message); 
