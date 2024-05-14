@@ -48,8 +48,10 @@ export class medicalRecordsService {
             const data = await medicalRecords.aggregate(pipeline).exec();
             console.log(data);
             
+            const populatedData = await medicalRecords.populate(data, { path: 'patientId', select: 'diagnosedWith' });
+
             // const data = await medicalRecords.find().populate({path:"patientId"})
-            return data;
+            return populatedData;
         } catch (error:any) {
             throw new Error(error.message);
         }
